@@ -22,4 +22,10 @@ public class DumlParserTest {
         assertEquals(1, object.getMap().size());
         assertEquals(ImmutableMap.of("foo", DumlNode.strings(ImmutableList.of("bar"))), object.getMap());
     }
+    @Test
+    public void testCase4() {
+        DumlNode object = DumlParser.parse("# comment\nfoo bar", false);
+        assertEquals(1, object.getMap().size());
+        assertEquals(ImmutableMap.of("foo", DumlNode.strings(ImmutableList.of("bar"))), object.getMap());
+    }
 }

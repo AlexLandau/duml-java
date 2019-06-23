@@ -33,9 +33,22 @@ public class DumlParser {
         perLineLoop : while (true) {
             StringBuilder keyBuilder = new StringBuilder();
             final String key;
+
+            reader.mark(1);
+            int firstChar = reader.read();
+            if (firstChar == '#') {
+                // Handle comment; ignore the rest of the line
+                int curChar = firstChar;
+                while (curChar != '\n' && curChar != '\r' && curChar != -1) {
+                    curChar = reader.read();
+                }
+                continue perLineLoop;
+            } else {
+                reader.reset();
+            }
+
             readKeyCharLoop : while (true) {
                 int curChar = reader.read();
-
                 if (curChar == SPACE || curChar == TAB) {
                     key = keyBuilder.toString();
                     break readKeyCharLoop;
