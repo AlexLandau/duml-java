@@ -1,8 +1,8 @@
 package com.github.alexlandau.duml;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DumlParser {
     private final boolean trimValues;
@@ -20,6 +20,10 @@ public class DumlParser {
         }
     }
 
+    public static DumlNode parse(File dumlFile, boolean trimValues) throws IOException {
+        return new DumlParser(trimValues).run(new BufferedReader(new FileReader(dumlFile)));
+    }
+
     private static final int NEWLINE_N = '\n';
     private static final int NEWLINE_R = '\r';
     private static final int EOF = -1;
@@ -28,6 +32,7 @@ public class DumlParser {
 
     // State of the thing being built
     private final DumlNode rootNode = DumlNode.emptyObject();
+    private final List<DumlNode> lostNodes = new ArrayList<DumlNode>();
 
     private DumlNode run(Reader reader) throws IOException {
         perLineLoop : while (true) {
@@ -92,7 +97,16 @@ public class DumlParser {
         for (int i = 0; i < keyParts.length - 1; i++) {
             String keyPart = keyParts[i];
             // TODO: Get back to this part
-//            DumlNode curValue = keyNode.get(keyPart);
+            DumlNode curValue = keyNode.get(keyPart);
+            if (curValue == null) {
+                DumlNode.DumlObjectNode newNode = DumlNode.emptyObject();
+                keyNode.getMap().put(keyPart, newNode);
+                keyNode = newNode;
+            } else if (curValue.isObject()) {
+                keyNode = curValue;
+            } else if (curValue.isStrings()) {
+                throw new UnsupportedOperationException();
+            }
         }
 
         // For the last part of the key, assume the current keyNode is an object

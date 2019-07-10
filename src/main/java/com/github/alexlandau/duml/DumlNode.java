@@ -9,7 +9,7 @@ public abstract class DumlNode {
     }
 
     public static DumlObjectNode emptyObject() {
-        return new DumlObjectNode(new HashMap<>());
+        return new DumlObjectNode(new LinkedHashMap<>());
     }
     public static DumlStringsNode emptyStrings() {
         return new DumlStringsNode(new ArrayList<>());
