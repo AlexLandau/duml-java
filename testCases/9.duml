@@ -1,0 +1,5 @@
+# Multiple array elements getting lost
+one.two three
+one.two punch
+
+one.two.three

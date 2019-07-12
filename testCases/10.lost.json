@@ -1,0 +1,10 @@
+[
+  {
+    "location": ["foo"],
+    "value": {
+      "bar": {
+        "baz": ["etcetera"]
+      }
+    }
+  }
+]

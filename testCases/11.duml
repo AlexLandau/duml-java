@@ -1,0 +1,8 @@
+# Lose a lot of nodes
+foo one
+foo.bar two
+foo.bar.baz three
+foo four
+foo.bar.baz five
+foo.bar six
+foo seven

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 
 @RunWith(Parameterized.class)
@@ -36,17 +37,30 @@ public class DumlParserTest {
     @Test
     public void testTestCase() throws Exception {
         File jsonFile = new File(dumlFile.getParent(), dumlFile.getName().replace(".duml", ".json"));
+        File lostJsonFile = new File(dumlFile.getParent(), dumlFile.getName().replace(".duml", ".lost.json"));
         if (!jsonFile.exists()) {
             throw new IllegalStateException("DUML test case file " + dumlFile.getName() + " does not have a corresponding .json file");
         }
 
-        DumlNode duml = DumlParser.parse(dumlFile, false);
+        DumlParseResult parseResult = DumlParser.parse(dumlFile, false);
+        DumlNode duml = parseResult.getDuml();
+        List<LostNode> lostNodes = parseResult.getLostNodes();
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode json = mapper.readTree(jsonFile);
 
         if (!checkEquality(duml, json)) {
-            throw new AssertionError("Unexpected parsing result: " + duml);
+            throw new AssertionError("Incorrect parsing result: " + duml);
+        }
+
+        if (!lostNodes.isEmpty() || lostJsonFile.exists()) {
+            if (!lostJsonFile.exists()) {
+                throw new AssertionError("There were unexpected lost nodes");
+            }
+            JsonNode lostJsons = mapper.readTree(lostJsonFile);
+            if (!checkLostEquality(lostNodes, lostJsons)) {
+                throw new AssertionError("Incorrect lost nodes result: " + lostNodes);
+            }
         }
     }
 
@@ -88,4 +102,32 @@ public class DumlParserTest {
         }
         return true;
     }
+
+    private boolean checkLostEquality(List<LostNode> lostNodes, JsonNode lostJsons) {
+        if (!lostJsons.isArray()) {
+            throw new RuntimeException("Expected the lostJsons file to be a JSON array");
+        }
+        if (lostNodes.size() != lostJsons.size()) {
+            return false;
+        }
+        for (int i = 0; i < lostNodes.size(); i++) {
+            LostNode lostDuml = lostNodes.get(i);
+            JsonNode lostJson = lostJsons.get(i);
+            if (!lostJson.isObject()) {
+                throw new RuntimeException("Expected the lostJson array element to be an object");
+            }
+            List<String> jsonLocation = StreamSupport.stream(lostJson.get("location").spliterator(), false)
+                    .map(JsonNode::asText)
+                    .collect(Collectors.toList());
+            if (!lostDuml.getLocation().equals(jsonLocation)) {
+                return false;
+            }
+            if (!checkEquality(lostDuml.getNode(), lostJson.get("value"))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }

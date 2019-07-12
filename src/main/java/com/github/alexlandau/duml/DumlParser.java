@@ -2,15 +2,17 @@ package com.github.alexlandau.duml;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DumlParser {
+    // TODO: Actually support trimValues; add tests for this
     private final boolean trimValues;
     private DumlParser(boolean trimValues) {
         this.trimValues = trimValues;
     }
 
-    public static DumlNode parse(String dumlText, boolean trimValues) {
+    public static DumlParseResult parse(String dumlText, boolean trimValues) {
         try {
             return new DumlParser(trimValues).run(new StringReader(dumlText));
         } catch (IOException e) {
@@ -20,7 +22,7 @@ public class DumlParser {
         }
     }
 
-    public static DumlNode parse(File dumlFile, boolean trimValues) throws IOException {
+    public static DumlParseResult parse(File dumlFile, boolean trimValues) throws IOException {
         return new DumlParser(trimValues).run(new BufferedReader(new FileReader(dumlFile)));
     }
 
@@ -32,9 +34,9 @@ public class DumlParser {
 
     // State of the thing being built
     private final DumlNode rootNode = DumlNode.emptyObject();
-    private final List<DumlNode> lostNodes = new ArrayList<DumlNode>();
+    private final List<LostNode> lostNodes = new ArrayList<>();
 
-    private DumlNode run(Reader reader) throws IOException {
+    private DumlParseResult run(Reader reader) throws IOException {
         perLineLoop : while (true) {
             StringBuilder keyBuilder = new StringBuilder();
             final String key;
@@ -63,7 +65,7 @@ public class DumlParser {
                         processKeyAndValue(key, "");
                     }
                     if (curChar == EOF) {
-                        return rootNode;
+                        return new DumlParseResult(rootNode, lostNodes);
                     }
                     continue perLineLoop;
                 } else {
@@ -79,7 +81,7 @@ public class DumlParser {
                     String value = valueBuilder.toString();
                     processKeyAndValue(key, value);
                     if (curChar == EOF) {
-                        return rootNode;
+                        return new DumlParseResult(rootNode, lostNodes);
                     }
                     continue perLineLoop;
                 } else {
@@ -105,7 +107,11 @@ public class DumlParser {
             } else if (curValue.isObject()) {
                 keyNode = curValue;
             } else if (curValue.isStrings()) {
-                throw new UnsupportedOperationException();
+                lostNodes.add(new LostNode(Arrays.asList(keyParts).subList(0, i + 1), curValue));
+
+                DumlNode.DumlObjectNode newNode = DumlNode.emptyObject();
+                keyNode.getMap().put(keyPart, newNode);
+                keyNode = newNode;
             }
         }
 
@@ -117,7 +123,11 @@ public class DumlParser {
             keyNode.getMap().put(lastKeyPart, newNode);
             curNodeAtKey = newNode;
         } else if (curNodeAtKey.isObject()) {
-            throw new UnsupportedOperationException("TODO: Implement this");
+            lostNodes.add(new LostNode(Arrays.asList(keyParts), curNodeAtKey));
+
+            DumlNode newNode = DumlNode.emptyStrings();
+            keyNode.getMap().put(lastKeyPart, newNode);
+            curNodeAtKey = newNode;
         } else {
             // This case is fine
         }

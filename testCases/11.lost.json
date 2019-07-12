@@ -1,0 +1,34 @@
+[
+  {
+    "location": ["foo"],
+    "value": ["one"]
+  },
+  {
+    "location": ["foo", "bar"],
+    "value": ["two"]
+  },
+  {
+    "location": ["foo"],
+    "value": {
+      "bar": {
+        "baz": ["three"]
+      }
+    }
+  },
+  {
+    "location": ["foo"],
+    "value": ["four"]
+  },
+  {
+    "location": ["foo", "bar"],
+    "value": {
+      "baz": ["five"]
+    }
+  },
+  {
+    "location": ["foo"],
+    "value": {
+      "bar": ["six"]
+    }
+  }
+]
