@@ -1,0 +1,22 @@
+# Values aren't escaped
+This is a valid DUML line.
+
+"So is this,
+# (Just a comment, not part of a string!)
+And so is this."
+
+(They might not do what you expect, but they are valid.)
+
+In this case, a backslash \n is just a backslash.
+Even at the end of a line: \
+Fresh line here!
+
+Isn't it nice?
+
+Well, you can't put a newline in your value.
+
+> But you may find that if you really need
+> to put newlines in a block of text, you can
+> just put them as sequential values with the
+> same key, and have the application interpret
+> the list of strings appropriately.

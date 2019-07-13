@@ -1,0 +1,9 @@
+{
+  "foo": [
+    " spacesAround ",
+    "usingTab",
+    " mixTabThenSpace",
+    "\tmixSpaceThenTab",
+    "endWithTab\t"
+  ]
+}

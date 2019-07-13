@@ -1,0 +1,9 @@
+{
+  "foo": [
+    "spacesAround",
+    "usingTab",
+    "mixTabThenSpace",
+    "mixSpaceThenTab",
+    "endWithTab"
+  ]
+}

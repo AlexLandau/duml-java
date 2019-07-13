@@ -1,0 +1,6 @@
+# Test some cases around whitespace and trimming
+foo  spacesAround 
+foo	usingTab
+foo	 mixTabThenSpace
+foo 	mixSpaceThenTab
+foo endWithTab	

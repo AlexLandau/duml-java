@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DumlParser {
-    // TODO: Actually support trimValues; add tests for this
     private final boolean trimValues;
     private DumlParser(boolean trimValues) {
         this.trimValues = trimValues;
@@ -92,6 +91,9 @@ public class DumlParser {
     }
 
     private void processKeyAndValue(String key, String value) {
+        if (trimValues) {
+            value = value.trim();
+        }
         String[] keyParts = key.split("\\.");
 
         DumlNode keyNode = rootNode;
