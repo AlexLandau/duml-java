@@ -1,0 +1,8 @@
+[
+  {
+    "location": ["foo"],
+    "value": {
+      "bar": ["one"]
+    }
+  }
+]

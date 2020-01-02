@@ -1,0 +1,5 @@
+# Replacing a node when making it lost doesn't affect its ordering in the JSON
+foo one
+bar two
+
+foo.bar three
