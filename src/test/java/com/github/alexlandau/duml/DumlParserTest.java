@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-
 @RunWith(Parameterized.class)
 public class DumlParserTest {
     @Parameterized.Parameters(name="{0}")

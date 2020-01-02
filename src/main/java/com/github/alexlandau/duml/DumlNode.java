@@ -28,6 +28,8 @@ public abstract class DumlNode {
     public abstract DumlNode get(String key);
     //@Nullable
     public abstract List<String> getStrings();
+    //@Nullable
+    public abstract String getLast();
 
     public abstract Map<String, DumlNode> getMap();
 
@@ -73,6 +75,11 @@ public abstract class DumlNode {
 
         @Override
         public List<String> getStrings() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getLast() {
             throw new UnsupportedOperationException();
         }
 
@@ -125,6 +132,15 @@ public abstract class DumlNode {
         @Override
         public List<String> getStrings() {
             return strings;
+        }
+
+        @Override
+        public String getLast() {
+            if (strings.isEmpty()) {
+                return null;
+            } else {
+                return strings.get(strings.size() - 1);
+            }
         }
 
         @Override
