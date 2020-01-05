@@ -26,10 +26,24 @@ public abstract class DumlNode {
 
     //@Nullable
     public abstract DumlNode get(String key, String... moreKeys);
-    //@Nullable
     public abstract List<String> getStrings();
+    public List<String> getStrings(String key, String... moreKeys) {
+        DumlNode nodeAtKey = get(key, moreKeys);
+        if (nodeAtKey == null) {
+            return Collections.emptyList();
+        }
+        return nodeAtKey.getStrings();
+    }
     //@Nullable
-    public abstract String getLast();
+    public abstract String getLastString();
+    //@Nullable
+    public String getLastString(String key, String... moreKeys) {
+        DumlNode nodeAtKey = get(key, moreKeys);
+        if (nodeAtKey == null) {
+            return null;
+        }
+        return nodeAtKey.getLastString();
+    }
 
     public abstract Map<String, DumlNode> getMap();
 
@@ -109,7 +123,7 @@ public abstract class DumlNode {
         }
 
         @Override
-        public String getLast() {
+        public String getLastString() {
             return null;
         }
 
@@ -165,7 +179,7 @@ public abstract class DumlNode {
         }
 
         @Override
-        public String getLast() {
+        public String getLastString() {
             if (strings.isEmpty()) {
                 return null;
             } else {
@@ -175,7 +189,7 @@ public abstract class DumlNode {
 
         @Override
         public Map<String, DumlNode> getMap() {
-            throw new UnsupportedOperationException();
+            return Collections.emptyMap();
         }
     }
 }
