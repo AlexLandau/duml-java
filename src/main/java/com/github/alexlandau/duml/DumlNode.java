@@ -25,7 +25,7 @@ public abstract class DumlNode {
     public abstract boolean isStrings();
 
     //@Nullable
-    public abstract DumlNode get(String key);
+    public abstract DumlNode get(String key, String... moreKeys);
     //@Nullable
     public abstract List<String> getStrings();
     //@Nullable
@@ -69,18 +69,48 @@ public abstract class DumlNode {
         }
 
         @Override
-        public DumlNode get(String key) {
-            return contents.get(key);
+        public DumlNode get(String key, String... moreKeys) {
+            DumlNode result = getInternal(key);
+            if (result == null) {
+                return result;
+            }
+            for (String additionalKey : moreKeys) {
+                if (!(result instanceof DumlObjectNode)) {
+                    return null;
+                }
+                result = ((DumlObjectNode) result).getInternal(additionalKey);
+                if (result == null) {
+                    return null;
+                }
+            }
+            return result;
+        }
+
+        //@Nullable
+        private DumlNode getInternal(String key) {
+            String[] keyComponents = key.split("\\.");
+            DumlNode curNode = this;
+            for (String keyComponent : keyComponents) {
+                if (!(curNode instanceof DumlObjectNode)) {
+                    return null;
+                }
+                DumlNode containedNode = ((DumlObjectNode) curNode).contents.get(keyComponent);
+                if (containedNode == null) {
+                    return null;
+                }
+                curNode = containedNode;
+            }
+            return curNode;
         }
 
         @Override
         public List<String> getStrings() {
-            throw new UnsupportedOperationException();
+            return Collections.emptyList();
         }
 
         @Override
         public String getLast() {
-            throw new UnsupportedOperationException();
+            return null;
         }
 
         @Override
@@ -125,7 +155,7 @@ public abstract class DumlNode {
         }
 
         @Override
-        public DumlNode get(String key) {
+        public DumlNode get(String key, String... moreKeys) {
             return null;
         }
 
